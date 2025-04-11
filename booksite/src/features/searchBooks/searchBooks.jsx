@@ -3,7 +3,7 @@ import SearchForm from "./searchForm";
 import SearchResults from "./searchResults";
 import AddBookForm from "../addingBooks/addBookForm";
 
-export default function sSearchBooks() {
+export default function SearchBooks() {
   const [results, setResults] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
 

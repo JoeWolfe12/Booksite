@@ -61,8 +61,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -103,10 +101,6 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -180,11 +174,12 @@ button:focus-visible {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

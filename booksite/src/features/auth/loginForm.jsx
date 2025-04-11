@@ -29,7 +29,25 @@ export default function LoginForm({ onLogin }) {
     setLoading(false);
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email to reset your password.");
+      return;
+    }
+  
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "http://localhost:5173/reset-password", // or your deployed URL
+    });
+  
+    if (error) {
+      setError("Failed to send reset email: " + error.message);
+    } else {
+      alert("Password reset email sent! Check your inbox.");
+    }
+  };
+
   return (
+    
     <form onSubmit={handleLogin} className="space-y-4 max-w-sm mx-auto">
       <div>
         <Label>Email</Label>
@@ -50,6 +68,16 @@ export default function LoginForm({ onLogin }) {
           required
         />
       </div>
+
+      <p className="text-sm mt-2 text-right">
+        <button
+          type="button"
+          onClick={() => handleForgotPassword()}
+          className="text-blue-600 underline"
+        >
+          Forgot your password?
+        </button>
+      </p>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
