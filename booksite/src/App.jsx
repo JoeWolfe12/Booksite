@@ -20,9 +20,6 @@ function App() {
       setLoading(false);
     });
 
-    console.log("user:", user);
-    console.log("loading:", loading);
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

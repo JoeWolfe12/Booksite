@@ -12,6 +12,7 @@ import {
   SelectContent,
   SelectItem
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 export default function AddBookForm({ book, onSubmit }) {
   const [status, setStatus] = useState("Want to Read");
@@ -21,8 +22,15 @@ export default function AddBookForm({ book, onSubmit }) {
   const [isbn, setIsbn] = useState(book.isbn || "");
   const [dateStarted, setDateStarted] = useState("");
   const [dateFinished, setDateFinished] = useState("");
+  const [pages, setPages] = useState(book.pages || "");
+  const [title, setTitle] = useState(book.title || "");
+  const [author, setAuthor] = useState(book.author || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  console.log("Book passed to AddBookForm:", book);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +41,8 @@ export default function AddBookForm({ book, onSubmit }) {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
+    
+    const userId = user?.id || user?.user?.id;
 
     if (userError || !user) {
       setError("You must be logged in to add a book.");
@@ -40,28 +50,52 @@ export default function AddBookForm({ book, onSubmit }) {
       return;
     }
 
-    const { error: insertError } = await supabase.from("user_books").insert([
-      {
-        user_id: user.id,
-        book_id: book.id,
-        title: book.title,
-        authors: book.authors,
-        cover: book.cover,
-        language,
-        isbn,
-        date_started: dateStarted || null,
-        date_finished: dateFinished || null,
-        status,
-        rating,
-        notes,
-      },
-    ]);
+    console.log("Inserting book:", {
+      user_id: userId,
+      book_id: book.id,
+      title,
+      author,
+      cover: book.cover,
+      language,
+      isbn,
+      date_started: dateStarted || null,
+      date_finished: dateFinished || null,
+      status,
+      rating: rating || null,
+      notes: notes
+        ? `[${new Date().toLocaleString()}]\n${notes}`
+        : null,
+      pages: pages || null,
+    });
+
+    const { error: insertError } = await supabase
+  .from("user_books")
+  .insert([
+    {
+      user_id: userId,
+      book_id: book.id,
+      title,
+      author,
+      cover: book.cover,
+      language,
+      isbn,
+      date_started: dateStarted || null,
+      date_finished: dateFinished || null,
+      status,
+      rating: rating || null,
+      notes: notes
+        ? `[${new Date().toLocaleString()}]\n${notes}`
+        : null,
+      pages: pages || null,
+    },
+  ]);
 
     if (insertError) {
       setError("Failed to add book. Please try again.");
       console.error(insertError);
     } else {
-      onSubmit && onSubmit();
+      if (onSubmit) onSubmit();
+      navigate("/my-books");
     }
 
     setLoading(false);
@@ -84,6 +118,26 @@ export default function AddBookForm({ book, onSubmit }) {
                 <SelectItem value="Read">Read</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Title</Label>
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <Label>Author(s)</Label>
+            <Input
+              type="text"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              required
+            />
           </div>
 
           <div>
@@ -118,6 +172,16 @@ export default function AddBookForm({ book, onSubmit }) {
           </div>
 
           <div>
+            <Label>Pages</Label>
+            <Input
+              type="number"
+              value={pages}
+              onChange={(e) => setPages(Number(e.target.value))}
+              placeholder="e.g. 350"
+            />
+          </div>
+
+          <div>
             <Label>Date Started</Label>
             <Input
               type="date"
@@ -137,7 +201,7 @@ export default function AddBookForm({ book, onSubmit }) {
 
           <div>
             <Label>Notes</Label>
-            <Textarea
+            <Textarea rows={6}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Thoughts, quotes, etc..."
@@ -151,6 +215,8 @@ export default function AddBookForm({ book, onSubmit }) {
           </Button>
         </form>
       </CardContent>
+      
     </Card>
+    
   );
 }
