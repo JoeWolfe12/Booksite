@@ -13,6 +13,7 @@ import {
   SelectItem
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function AddBookForm({ book, onSubmit }) {
   const [status, setStatus] = useState("Want to Read");
@@ -27,10 +28,19 @@ export default function AddBookForm({ book, onSubmit }) {
   const [author, setAuthor] = useState(book.author || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [allGenres, setAllGenres] = useState([]);
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
-  console.log("Book passed to AddBookForm:", book);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      const { data, error } = await supabase.from("genres").select("*");
+      if (!error) setAllGenres(data || []);
+    };
+    fetchGenres();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,24 +59,6 @@ export default function AddBookForm({ book, onSubmit }) {
       setLoading(false);
       return;
     }
-
-    console.log("Inserting book:", {
-      user_id: userId,
-      book_id: book.id,
-      title,
-      author,
-      cover: book.cover,
-      language,
-      isbn,
-      date_started: dateStarted || null,
-      date_finished: dateFinished || null,
-      status,
-      rating: rating || null,
-      notes: notes
-        ? `[${new Date().toLocaleString()}]\n${notes}`
-        : null,
-      pages: pages || null,
-    });
 
     const { error: insertError } = await supabase
   .from("user_books")
@@ -90,13 +82,29 @@ export default function AddBookForm({ book, onSubmit }) {
     },
   ]);
 
-    if (insertError) {
-      setError("Failed to add book. Please try again.");
-      console.error(insertError);
-    } else {
-      if (onSubmit) onSubmit();
-      navigate("/my-books");
+  if (!insertError) {
+    const { data: insertedBooks } = await supabase
+      .from("user_books")
+      .select("id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1);
+  
+    const insertedBookId = insertedBooks?.[0]?.id;
+  
+    if (insertedBookId && selectedGenres.length > 0) {
+      const genreInserts = selectedGenres.map((genre_id) => ({
+        book_id: insertedBookId,
+        genre_id,
+      }));
+  
+      await supabase.from("book_genres").insert(genreInserts);
     }
+  
+    alert("Book added successfully!");
+    if (onSubmit) onSubmit();
+    navigate("/my-books");
+  }
 
     setLoading(false);
   };
@@ -109,10 +117,10 @@ export default function AddBookForm({ book, onSubmit }) {
           <div>
             <Label>Status</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
+            <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-gray-800 text-black dark:text-gray-100">
                 <SelectItem value="Want to Read">Want to Read</SelectItem>
                 <SelectItem value="Reading">Reading</SelectItem>
                 <SelectItem value="Read">Read</SelectItem>
@@ -144,6 +152,7 @@ export default function AddBookForm({ book, onSubmit }) {
             <Label>Rating</Label>
             <Input
               type="number"
+              step="0.05"
               min="0"
               max="5"
               value={rating}
@@ -179,6 +188,29 @@ export default function AddBookForm({ book, onSubmit }) {
               onChange={(e) => setPages(Number(e.target.value))}
               placeholder="e.g. 350"
             />
+          </div>
+
+          <div>
+            <Label>Genres</Label>
+            <div className="flex flex-wrap gap-3 p-3 border rounded-md bg-gray-50 dark:bg-gray-800 text-black dark:text-gray-100">
+              {allGenres.map((genre) => (
+                <label key={genre.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 border border-gray-400 accent-blue-600"
+                    value={genre.id}
+                    checked={selectedGenres.includes(genre.id)}
+                    onChange={(e) => {
+                      const updated = e.target.checked
+                        ? [...selectedGenres, genre.id]
+                        : selectedGenres.filter((g) => g !== genre.id);
+                      setSelectedGenres(updated);
+                    }}
+                  />
+                  {genre.genre_name}
+                </label>
+              ))}
+            </div>
           </div>
 
           <div>

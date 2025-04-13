@@ -9,6 +9,8 @@ import AddBookForm from "@/features/addingBooks/addBookForm";
 import StatsPage from "@/features/stats/StatsPage"; // create this later
 import Sidebar from "@/features/navigation/Sidebar"; 
 import ResetPassword from "@/features/auth/resetPassword";
+import MyBooksPage from "@/features/myBooks/myBooksPage";
+import EditBookPage from "@/features/addingBooks/editBookPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -38,7 +40,7 @@ function App() {
         {user ? (
           <div className="flex h-screen">
             <Sidebar user={user} />
-            <main className="flex-1 p-4 overflow-auto">
+            <main className="flex-1 p-6 overflow-y-auto bg-gray-900 text-gray-100">
               <Routes>
                 {user.guest ? (
                   <Route path="*" element={<AllBooksPublicPage />} />
@@ -47,6 +49,8 @@ function App() {
                     <Route path="/" element={<Navigate to="/books" />} />
                     <Route path="/books" element={<SearchBooks />} />
                     <Route path="/add-book" element={<AddBookForm />} />
+                    <Route path="/my-books" element={<MyBooksPage />} />
+                    <Route path="/edit-book/:id" element={<EditBookPage />} />
                     <Route path="/stats" element={<StatsPage />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="*" element={<p>404 - Page Not Found</p>} />

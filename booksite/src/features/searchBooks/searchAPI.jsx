@@ -6,6 +6,7 @@ export async function searchBooks(query) {
       return data.docs.map((doc) => ({
         id: doc.key, // e.g., "/works/OL123456W"
         title: doc.title,
+        author: doc.author_name?.join(", ") || "",
         authors: doc.author_name || [],
         cover: doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg` : null,
         language: doc.language?.[0] || "",
