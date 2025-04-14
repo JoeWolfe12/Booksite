@@ -6,7 +6,7 @@ import './index.css';
 import AuthLanding from "@/features/auth/authLanding";
 import SearchBooks from "@/features/searchBooks/searchBooks";
 import AddBookForm from "@/features/addingBooks/addBookForm"; 
-import StatsPage from "@/features/stats/StatsPage"; 
+import StatsPage from "@/features/stats/statsPage"; 
 import Sidebar from "@/features/navigation/Sidebar"; 
 import ResetPassword from "@/features/auth/resetPassword";
 import MyBooksPage from "@/features/myBooks/myBooksPage";
