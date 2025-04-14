@@ -1,6 +1,6 @@
 import { useState } from "react";
-import SignupForm from "@/features/auth/SignupForm";
-import LoginForm from "@/features/auth/LoginForm";
+import SignupForm from "@/features/auth/signupForm";
+import LoginForm from "@/features/auth/loginForm";
 
 export default function AuthLanding({ onAuth, onGuest }) {
   const [mode, setMode] = useState("login");
