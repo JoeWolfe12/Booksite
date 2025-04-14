@@ -114,19 +114,19 @@ export default function AddBookForm({ book, onSubmit }) {
       <CardContent>
         <h2 className="text-xl font-bold mb-4">Add "{book.title}" to Your Shelf</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label>Status</Label>
-            <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100">
+        <div>
+          <Label>Status</Label>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 text-black dark:text-gray-100">
-                <SelectItem value="Want to Read">Want to Read</SelectItem>
-                <SelectItem value="Reading">Reading</SelectItem>
-                <SelectItem value="Read">Read</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <SelectContent className="bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-md">
+              <SelectItem value="Want to Read">Want to Read</SelectItem>
+              <SelectItem value="Reading">Reading</SelectItem>
+              <SelectItem value="Read">Read</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
           <div>
             <Label>Title</Label>

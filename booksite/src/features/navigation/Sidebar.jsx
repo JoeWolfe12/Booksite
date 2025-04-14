@@ -21,7 +21,7 @@ export default function Sidebar() {
   return (
     <div className="w-48 h-full p-4 bg-gray-900 text-white border-r border-gray-700">
       {user && <Link to="/my-books" className="block">My Books</Link>}
-      <Link to="/books" className="block">All Books</Link>
+      <Link to="/books" className="block">Search Books</Link>
       {user && <Link to="/stats" className="block">My Stats</Link>}
       <div className="pt-4">
         {user ? (

@@ -171,20 +171,19 @@ export default function EditBookPage() {
       </div>
 
       <div>
-        <Label>Status</Label>
-        <Select
-          value={book.status}
-          onValueChange={(value) => setBook({ ...book, status: value })}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select status" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800">
-            <SelectItem value="Want to Read">Want to Read</SelectItem>
-            <SelectItem value="Reading">Reading</SelectItem>
-            <SelectItem value="Read">Read</SelectItem>
-          </SelectContent>
-        </Select>
+      <Select
+        value={book.status || ""}
+        onValueChange={(value) => setBook({ ...book, status: value })}
+      >
+        <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-black dark:text-gray-100">
+          <SelectValue placeholder="Select status" />
+        </SelectTrigger>
+        <SelectContent className="bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600">
+          <SelectItem value="Want to Read">Want to Read</SelectItem>
+          <SelectItem value="Reading">Reading</SelectItem>
+          <SelectItem value="Read">Read</SelectItem>
+        </SelectContent>
+      </Select>
       </div>
 
       <div>

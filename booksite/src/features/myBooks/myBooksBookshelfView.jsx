@@ -1,55 +1,90 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
-export default function MyBooksBookshelfView() {
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function MyBooksBookshelfView({ books }) {
+  const [filter, setFilter] = useState("All");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  const filteredBooks =
+    filter === "All" ? books : books.filter((book) => book.status === filter);
 
-      const { data, error } = await supabase
-        .from("user_books")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) console.error("Error fetching books:", error);
-      else setBooks(data);
-
-      setLoading(false);
-    };
-
-    fetchBooks();
-  }, []);
-
-  if (loading) return <p>Loading bookshelf...</p>;
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Want to Read":
+        return "bg-blue-600";
+      case "Reading":
+        return "bg-yellow-500";
+      case "Read":
+        return "bg-green-600";
+      default:
+        return "bg-gray-600";
+    }
+  };
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-6 p-6">
-      {books.map((book) => (
-        <div
-          key={book.id}
-          className="relative group cursor-pointer"
-          onClick={() => navigate(`/edit-book/${book.id}`)}
-        >
-          <img
-            src={book.cover}
-            alt={book.title}
-            className="w-full h-auto shadow-md rounded"
-          />
-          <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white text-center p-2 rounded">
-            <h4 className="text-sm font-bold">{book.title}</h4>
-            <p className="text-xs">{book.author}</p>
-            <p className="text-xs italic mt-1">{book.status}</p>
+    <div className="p-4">
+      {/* Filter buttons */}
+      <div className="flex gap-2 mb-4">
+        {["All", "Want to Read", "Reading", "Read"].map((status) => (
+          <Button
+            key={status}
+            variant={filter === status ? "default" : "outline"}
+            onClick={() => setFilter(status)}
+          >
+            {status}
+          </Button>
+        ))}
+      </div>
+
+      {/* Book cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredBooks.map((book) => (
+          <div
+            key={book.id}
+            onClick={() => navigate(`/edit-book/${book.id}`)}
+            className="bg-gray-800 p-3 rounded shadow text-white cursor-pointer hover:bg-gray-700 transition"
+          >
+            {/* Book cover */}
+            {book.cover ? (
+              <img
+                src={book.cover}
+                alt={book.title}
+                className="w-full h-48 object-cover rounded mb-2"
+              />
+            ) : (
+              <div className="w-full h-48 bg-gray-700 flex items-center justify-center rounded mb-2 text-sm text-gray-400">
+                No Cover
+              </div>
+            )}
+
+            {/* Title & author */}
+            <h3 className="font-semibold text-lg mb-1">{book.title}</h3>
+            <p className="text-sm text-gray-300 mb-2">{book.author}</p>
+
+            {/* Status badge */}
+            <div
+              className={`inline-block px-2 py-0.5 rounded text-xs font-semibold text-white ${getStatusColor(
+                book.status
+              )} mb-2`}
+            >
+              {book.status}
+            </div>
+
+            {/* Genres */}
+            <div className="flex flex-wrap gap-1 mt-1">
+              {book.genres?.map((genre, i) => (
+                <span
+                  key={i}
+                  className="text-xs bg-gray-700 px-2 py-0.5 rounded-full text-gray-200"
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

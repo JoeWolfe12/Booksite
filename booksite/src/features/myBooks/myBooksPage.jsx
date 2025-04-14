@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import MyBooksBookshelfView from "@/features/myBooks/MyBooksBookshelfView";
 import MyBooksTableView from "@/features/myBooks/MyBooksTableView";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function MyBooksPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("bookshelf");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -53,20 +55,29 @@ export default function MyBooksPage() {
 
   return (
     <div>
-      <div className="flex justify-end gap-2 p-4">
-        <Button
-          variant={view === "bookshelf" ? "default" : "outline"}
-          onClick={() => setView("bookshelf")}
-        >
-          Bookshelf View
-        </Button>
-        <Button
-          variant={view === "table" ? "default" : "outline"}
-          onClick={() => setView("table")}
-        >
-          Table View
-        </Button>
-      </div>
+<div className="flex justify-between items-center p-4">
+  <Button
+    variant="outline"
+    onClick={() => navigate("/books")}
+  >
+    Search Books
+  </Button>
+
+  <div className="flex gap-2">
+    <Button
+      variant={view === "bookshelf" ? "default" : "outline"}
+      onClick={() => setView("bookshelf")}
+    >
+      Bookshelf View
+    </Button>
+    <Button
+      variant={view === "table" ? "default" : "outline"}
+      onClick={() => setView("table")}
+    >
+      Table View
+    </Button>
+  </div>
+</div>
   
       {view === "bookshelf" && <MyBooksBookshelfView books={books} />}
       {view === "table" && <MyBooksTableView books={books} />}
