@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import MyBooksBookshelfView from "@/features/myBooks/myBooksBookshelfView";
-import MyBooksTableView from "@/features/myBooks/myBooksTableView";
+import MyBooksTableView from "@/features/myBooks/myBooksTabledataView";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
