@@ -8,7 +8,7 @@ export default function AuthLanding({ onAuth, onGuest }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 text-gray-100">
       <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold text-center mb-2">📚 Booksite</h1>
+        <h1 className="text-3xl font-bold text-center mb-2">📚 Booklog</h1>
         <p className="text-sm text-center text-gray-400 mb-6">
           Record the books you read. Punces welcome
         </p>
@@ -49,12 +49,6 @@ export default function AuthLanding({ onAuth, onGuest }) {
 
         <div className="text-center mt-6">
           <p className="text-sm text-gray-400 mb-2">Or</p>
-          <button
-            onClick={onGuest}
-            className="text-blue-400 underline text-sm hover:text-blue-300"
-          >
-            Continue as Guest
-          </button>
         </div>
       </div>
     </div>
