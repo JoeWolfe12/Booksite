@@ -6,8 +6,8 @@ export default function MyBooksTableView({ books }) {
   const [sortOrder, setSortOrder] = useState("asc");
 
   // Filter state
-  const [titleFilter, setTitleFilter] = useState(""); 
-  const [authorFilter, setAuthorFilter] = useState("");
+  const [titleFilter, setTitleFilter] = useState("");
+  const [authorFilter, setAuthorFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("All");
 
   const handleSort = (field) => {
