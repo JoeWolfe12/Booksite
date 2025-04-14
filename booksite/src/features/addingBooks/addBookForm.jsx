@@ -30,6 +30,7 @@ export default function AddBookForm({ book, onSubmit }) {
   const [error, setError] = useState(null);
   const [allGenres, setAllGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const [isPrivate, setIsPrivate] = useState(false);
 
 
   const navigate = useNavigate();
@@ -75,6 +76,7 @@ export default function AddBookForm({ book, onSubmit }) {
       date_finished: dateFinished || null,
       status,
       rating: rating || null,
+      private: isPrivate,
       notes: notes
         ? `[${new Date().toLocaleString()}]\n${notes}`
         : null,
@@ -230,7 +232,18 @@ export default function AddBookForm({ book, onSubmit }) {
               onChange={(e) => setDateFinished(e.target.value)}
             />
           </div>
-
+            
+          <div className="mb-4">
+            <Label htmlFor="privateToggle">Private</Label>
+            <input
+              id="privateToggle"
+              type="checkbox"
+              checked={isPrivate}
+              onChange={(e) => setIsPrivate(e.target.checked)}
+              className="ml-2"
+            />
+          </div>
+          
           <div>
             <Label>Notes</Label>
             <Textarea rows={6}

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { format, parseISO } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine  } from "recharts";
 import { Input } from "@/components/ui/input";
+import { prepareChartData } from "@/features/stats/prepareChartData";
 
 export default function StatsPage() {
   const [books, setBooks] = useState([]);
@@ -74,15 +75,7 @@ export default function StatsPage() {
     if (book.rating) dataByMonth[month].ratings.push(book.rating);
   });
 
-  const chartData = Object.values(dataByMonth).map((entry) => ({
-    month: entry.month,
-    books: entry.books,
-    pages: entry.pages,
-    rating:
-      entry.ratings.length > 0
-        ? entry.ratings.reduce((a, b) => a + b, 0) / entry.ratings.length
-        : 0,
-  }));
+  const chartData = prepareChartData(dataByMonth);
 
   const averageValue =
   graphType === "booksRead"
@@ -154,13 +147,16 @@ export default function StatsPage() {
           <ResponsiveContainer width="100%" height="100%">
           {graphType === "ratings" ? (
   <LineChart data={chartData}>
-    <XAxis dataKey="month" label={{ value: "Month", position: "insideBottom", offset: -5 }} />
+    <XAxis dataKey="label" label={{ value: "Month", position: "insideBottom", offset: -5 }} />
     <YAxis label={{ value: "Avg Rating", angle: -90, position: "insideLeft" }} />
     <Tooltip />
+    <Bar dataKey={graphType === "booksRead" ? "books" : "pages"} fill="#4F46E5" />
     <ReferenceLine
       y={averageValue}
       stroke="red"
       strokeDasharray="4 4"
+      ifOverflow="extendDomain"
+      isFront={true}
       label={{
         position: "top",
         value: `Avg: ${averageValue.toFixed(2)}`,
@@ -172,7 +168,7 @@ export default function StatsPage() {
   </LineChart>
 ) : (
   <BarChart data={chartData}>
-    <XAxis dataKey="month" label={{ value: "Month", position: "insideBottom", offset: -5 }} />
+    <XAxis dataKey="label" label={{ value: "Month", position: "insideBottom", offset: -5 }} />
     <YAxis
       label={{
         value: graphType === "pagesRead" ? "Pages" : "Books",
@@ -181,10 +177,13 @@ export default function StatsPage() {
       }}
     />
     <Tooltip />
+    <Line type="monotone" dataKey="rating" stroke="#4F46E5" />
     <ReferenceLine
       y={averageValue}
       stroke="red"
       strokeDasharray="4 4"
+      ifOverflow="extendDomain"
+      isFront={true}
       label={{
         position: "top",
         value: `Avg: ${averageValue.toFixed(2)}`,

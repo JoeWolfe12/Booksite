@@ -21,6 +21,7 @@ export default function EditBookPage() {
   const [error, setError] = useState(null);
   const [allGenres, setAllGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   useEffect(() => {
     const fetchBookAndGenres = async () => {
@@ -43,8 +44,12 @@ export default function EditBookPage() {
   
       setSelectedGenres(bookGenres?.map((g) => g.genre_id) || []);
   
-      if (bookError) setError("Could not find book.");
-      else setBook(bookData);
+      if (bookError || !bookData) {
+        setError("Could not find book.");
+      } else {
+        setBook(bookData);
+        setIsPrivate(bookData.private ?? false);
+      }
   
       setLoading(false);
     };
@@ -64,6 +69,7 @@ export default function EditBookPage() {
         date_started: book.date_started || null,
         date_finished: book.date_finished || null,
         rating: book.rating || null,
+        private: isPrivate,
       })
       .eq("id", id);
 
@@ -206,6 +212,17 @@ export default function EditBookPage() {
             setBook({ ...book, date_finished: e.target.value || null })
             }
         />
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="privateToggle">Private</Label>
+          <input
+            id="privateToggle"
+            type="checkbox"
+            checked={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+            className="ml-2"
+          />
         </div>
 
       <div>
