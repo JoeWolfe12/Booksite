@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,25 +13,27 @@ import {
   SelectItem
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 export default function AddBookForm({ book, onSubmit, onCancel }) {
+  const storedBook = !book && localStorage.getItem("bookToAdd");
+  const parsedBook = storedBook ? JSON.parse(storedBook) : null;
+  const activeBook = book || parsedBook || {};
+
   const [status, setStatus] = useState("Want to Read");
   const [rating, setRating] = useState(0);
   const [notes, setNotes] = useState("");
-  const [language, setLanguage] = useState(book.language || "");
-  const [isbn, setIsbn] = useState(book.isbn || "");
+  const [language, setLanguage] = useState(activeBook.language || "");
+  const [isbn, setIsbn] = useState(activeBook.isbn || "");
   const [dateStarted, setDateStarted] = useState("");
   const [dateFinished, setDateFinished] = useState("");
-  const [pages, setPages] = useState(book.pages || "");
-  const [title, setTitle] = useState(book.title || "");
-  const [author, setAuthor] = useState(book.author || "");
+  const [pages, setPages] = useState(activeBook.pages || "");
+  const [title, setTitle] = useState(activeBook.title || "");
+  const [author, setAuthor] = useState(activeBook.author || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allGenres, setAllGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -62,95 +64,90 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
     }
 
     const { error: insertError } = await supabase
-  .from("user_books")
-  .insert([
-    {
-      user_id: userId,
-      book_id: book.id,
-      title,
-      author,
-      cover: book.cover,
-      language,
-      isbn,
-      date_started: dateStarted || null,
-      date_finished: dateFinished || null,
-      status,
-      rating: rating || null,
-      private: isPrivate,
-      notes: notes
-        ? `[${new Date().toLocaleString()}]\n${notes}`
-        : null,
-      pages: pages || null,
-    },
-  ]);
-
-  if (!insertError) {
-    const { data: insertedBooks } = await supabase
       .from("user_books")
-      .select("id")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1);
-  
-    const insertedBookId = insertedBooks?.[0]?.id;
-  
-    if (insertedBookId && selectedGenres.length > 0) {
-      const genreInserts = selectedGenres.map((genre_id) => ({
-        book_id: insertedBookId,
-        genre_id,
-      }));
-  
-      await supabase.from("book_genres").insert(genreInserts);
+      .insert([{
+        user_id: userId,
+        book_id: activeBook.id,
+        title,
+        author,
+        cover: activeBook.cover,
+        language,
+        isbn,
+        date_started: dateStarted || null,
+        date_finished: dateFinished || null,
+        status,
+        rating: rating || null,
+        private: isPrivate,
+        notes: notes ? `[${new Date().toLocaleString()}]\n${notes}` : null,
+        pages: pages || null,
+      }]);
+
+    if (!insertError) {
+      const { data: insertedBooks } = await supabase
+        .from("user_books")
+        .select("id")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      const insertedBookId = insertedBooks?.[0]?.id;
+
+      if (insertedBookId && selectedGenres.length > 0) {
+        const genreInserts = selectedGenres.map((genre_id) => ({
+          book_id: insertedBookId,
+          genre_id,
+        }));
+        await supabase.from("book_genres").insert(genreInserts);
+      }
+
+      localStorage.removeItem("bookToAdd"); // ✅ cleanup
+      alert("Book added successfully!");
+      onSubmit?.();
+      navigate("/my-books");
     }
-  
-    alert("Book added successfully!");
-    if (onSubmit) onSubmit();
-    navigate("/my-books");
-  }
 
     setLoading(false);
   };
 
+  const handleCancel = () => {
+    localStorage.removeItem("bookToAdd"); // ✅ cleanup
+    onCancel?.();
+  };
+
   return (
     <Card className="max-w-md mx-auto p-4">
-      <Button variant="outline" onClick={onCancel}>
-        ← Back to Search
-      </Button>
+      {onCancel && (
+        <Button variant="outline" onClick={handleCancel}>
+          ← Back to Search
+        </Button>
+      )}
       <CardContent>
-        <h2 className="text-xl font-bold mb-4">Add "{book.title}" to Your Shelf</h2>
+        <h2 className="text-xl font-bold mb-4">
+          Add "{activeBook.title || 'Book'}" to Your Shelf
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label>Status</Label>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-md">
-              <SelectItem value="Want to Read">Want to Read</SelectItem>
-              <SelectItem value="Reading">Reading</SelectItem>
-              <SelectItem value="Read">Read</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div>
+            <Label>Status</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-100 dark:bg-gray-800 text-black dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-md">
+                <SelectItem value="Want to Read">Want to Read</SelectItem>
+                <SelectItem value="Reading">Reading</SelectItem>
+                <SelectItem value="Read">Read</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div>
             <Label>Title</Label>
-            <Input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
 
           <div>
             <Label>Author(s)</Label>
-            <Input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-            />
+            <Input value={author} onChange={(e) => setAuthor(e.target.value)} required />
           </div>
 
           <div>
@@ -235,7 +232,7 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
               onChange={(e) => setDateFinished(e.target.value)}
             />
           </div>
-            
+
           <div className="mb-4">
             <Label htmlFor="privateToggle">Private</Label>
             <input
@@ -246,10 +243,11 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
               className="ml-2"
             />
           </div>
-          
+
           <div>
             <Label>Notes</Label>
-            <Textarea rows={6}
+            <Textarea
+              rows={6}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Thoughts, quotes, etc..."
@@ -263,8 +261,6 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
           </Button>
         </form>
       </CardContent>
-      
     </Card>
-    
   );
 }

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 
 export default function AllBooksPage() {
   const [books, setBooks] = useState([]);
@@ -13,6 +14,8 @@ export default function AllBooksPage() {
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({ genre: "all", user: "all", search: "" });
   const [view, setView] = useState("table");
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     const search = filters.search.toLowerCase();
@@ -23,7 +26,7 @@ export default function AllBooksPage() {
         book.book_genres?.some((g) => g.genres?.genre_name === filters.genre);
   
       const userMatches =
-        filters.user === "all" || book.profiles?.username === filters.user;
+        filters.user === "all" || book.user_id?.username === filters.user;
   
       const searchMatches =
         !search ||
@@ -42,14 +45,22 @@ export default function AllBooksPage() {
   }, [books]);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id);
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       // Fetch public books
       const { data: bookData, error: bookError } = await supabase
         .from("user_books")
         .select(`
-            id, title, author, cover, status, rating, private,
-            user_id ( username ),
-            book_genres ( genres ( genre_name ) )
+          id, title, author, cover, status, rating, private,
+          user_id ( id, username ),
+          book_genres ( genres ( genre_name ) )
         `)
         .eq("private", false);
   
@@ -156,6 +167,7 @@ export default function AllBooksPage() {
           <th className="p-2 text-left">User</th>
           <th className="p-2 text-left">Status</th>
           <th className="p-2 text-left">Rating</th>
+          <th className="p-2 text-left">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -166,6 +178,27 @@ export default function AllBooksPage() {
             <td className="p-2">{book.user_id?.username}</td>
             <td className="p-2 italic text-gray-500">{book.status}</td>
             <td className="p-2">{book.rating ? `★${book.rating}` : "-"}</td>
+            <td className="p-2">
+              {book.user_id?.id === currentUserId ? (
+                <a
+                  href={`/edit-book/${book.id}`}
+                  className="text-blue-600 underline"
+                >
+                  Edit
+                </a>
+              ) : (
+                <Button
+                variant="link"
+                className="text-green-600 p-0 h-auto"
+                onClick={() => {
+                  localStorage.setItem("bookToAdd", JSON.stringify(book));
+                  navigate("/add-book");
+                }}
+              >
+                Add
+              </Button>
+              )}
+            </td>
           </tr>
         ))}
       </tbody>
