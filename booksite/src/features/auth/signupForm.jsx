@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 export default function SignupForm({ onSignup }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,9 +16,20 @@ export default function SignupForm({ onSignup }) {
     setError(null);
     setLoading(true);
 
+    if (!username.trim()) {
+      setError("Username is required.");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username.trim(),
+        },
+      },
     });
 
     if (error) {
@@ -47,6 +59,15 @@ export default function SignupForm({ onSignup }) {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+
+      <div>
+        <Label>Username</Label>
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
       </div>

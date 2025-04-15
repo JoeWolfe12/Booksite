@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import './index.css';
-
 import AuthLanding from "@/features/auth/authLanding";
 import SearchBooks from "@/features/searchBooks/searchBooks";
 import AddBookForm from "@/features/addingBooks/addBookForm"; 
@@ -11,6 +10,8 @@ import Sidebar from "@/features/navigation/Sidebar";
 import ResetPassword from "@/features/auth/resetPassword";
 import MyBooksPage from "@/features/myBooks/myBooksPage";
 import EditBookPage from "@/features/addingBooks/editBookPage";
+import MyProfilePage from "@/features/myProfile/myProfilePage";
+import AllBooksPage from "@/features/allBooks/allBooksPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -50,8 +51,10 @@ function App() {
                     <Route path="/books" element={<SearchBooks />} />
                     <Route path="/add-book" element={<AddBookForm />} />
                     <Route path="/my-books" element={<MyBooksPage />} />
+                    <Route path="/all-books" element={<AllBooksPage />} />
                     <Route path="/edit-book/:id" element={<EditBookPage />} />
                     <Route path="/stats" element={<StatsPage />} />
+                    <Route path="/profile" element={<MyProfilePage />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="*" element={<p>404 - Page Not Found</p>} />
                   </>
