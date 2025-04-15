@@ -20,7 +20,11 @@ export default function SearchBooks() {
       <SearchForm onResults={setResults} />
 
       {selectedBook ? (
-        <AddBookForm book={selectedBook} onSubmit={handleFormSubmit} />
+        <AddBookForm
+          book={selectedBook}
+          onSubmit={handleFormSubmit}
+          onCancel={() => setSelectedBook(null)}
+        />
       ) : (
         <SearchResults books={results} onSelect={handleSelectBook} />
       )}

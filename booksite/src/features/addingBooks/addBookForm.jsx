@@ -15,7 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-export default function AddBookForm({ book, onSubmit }) {
+export default function AddBookForm({ book, onSubmit, onCancel }) {
   const [status, setStatus] = useState("Want to Read");
   const [rating, setRating] = useState(0);
   const [notes, setNotes] = useState("");
@@ -113,6 +113,9 @@ export default function AddBookForm({ book, onSubmit }) {
 
   return (
     <Card className="max-w-md mx-auto p-4">
+      <Button variant="outline" onClick={onCancel}>
+        ← Back to Search
+      </Button>
       <CardContent>
         <h2 className="text-xl font-bold mb-4">Add "{book.title}" to Your Shelf</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
