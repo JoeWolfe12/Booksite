@@ -47,9 +47,6 @@ export default function AuthLanding({ onAuth, onGuest }) {
           )}
         </p>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-400 mb-2">Or</p>
-        </div>
       </div>
     </div>
   );
