@@ -49,7 +49,7 @@ function App() {
                   <>
                     <Route path="/" element={<Navigate to="/books" />} />
                     <Route path="/books" element={<SearchBooks />} />
-                    <Route path="/add-book" element={<AddBookForm />} />
+                    <Route path="/add-book/:workId" element={<AddBookForm />} />
                     <Route path="/my-books" element={<MyBooksPage />} />
                     <Route path="/all-books" element={<AllBooksPage />} />
                     <Route path="/edit-book/:id" element={<EditBookPage />} />

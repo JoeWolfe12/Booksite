@@ -1,9 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import BookCard from "./bookCardSearchResult";
 
-export default function SearchResults({ books, onSelect }) {
-  if (!books || books.length === 0) {
-    return <p className="text-center text-gray-500">No results found.</p>;
-  }
+export default function SearchResults({ books, onSelect}) {
+  const navigate = useNavigate();
 
   const handleAddClick = async (book) => {
     try {
@@ -27,12 +26,14 @@ export default function SearchResults({ books, onSelect }) {
       console.error("Failed to fetch edition info:", error);
       onSelect(book); 
     }
+
+    navigate(`/add-book/${book.id.replace("/works/", "")}`);
   };
 
   return (
     <div className="grid gap-4">
       {books.map((book) => (
-        <BookCard key={book.id} book={book} onSelect={() => handleAddClick(book)} />
+        <BookCard key={book.id} book={book} onSelect={() => handleAddClick(book)}/>
       ))}
     </div>
   );

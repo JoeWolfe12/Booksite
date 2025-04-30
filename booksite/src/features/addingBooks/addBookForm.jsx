@@ -12,31 +12,79 @@ import {
   SelectContent,
   SelectItem
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function AddBookForm({ book, onSubmit, onCancel }) {
-  const storedBook = !book && localStorage.getItem("bookToAdd");
-  const parsedBook = storedBook ? JSON.parse(storedBook) : null;
-  const activeBook = book || parsedBook || {};
+export default function AddBookForm({ onSubmit, onCancel }) {
 
+  const navigate = useNavigate();
+  const { workId } = useParams();
+  const [activeBook, setActiveBook] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("Want to Read");
   const [rating, setRating] = useState(0);
   const [notes, setNotes] = useState("");
-  const [language, setLanguage] = useState(activeBook.language || "");
-  const [isbn, setIsbn] = useState(activeBook.isbn || "");
+  const [language, setLanguage] = useState("");
+  const [isbn, setIsbn] = useState("");
   const [dateStarted, setDateStarted] = useState("");
   const [dateFinished, setDateFinished] = useState("");
-  const [pages, setPages] = useState(activeBook.pages || "");
-  const [title, setTitle] = useState(activeBook.title || "");
-  const [author, setAuthor] = useState(activeBook.author || "");
-  const [loading, setLoading] = useState(false);
+  const [pages, setPages] = useState("");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
   const [error, setError] = useState(null);
   const [allGenres, setAllGenres] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const navigate = useNavigate();
 
+
+  // fetch the book detils
+  useEffect(() => {
+    async function fetchWork() {
+      setLoading(true)
+      try {
+        // Get the book data
+        const res = await fetch(`https://openlibrary.org/works/${workId}.json`);
+        const work = await res.json();
+        // ISBN & pages requires a different API call to get the edition data
+        const edRes  = await fetch(`https://openlibrary.org/works/${workId}/editions.json`);
+        const edData = await edRes.json();
+        const editionWithPages = edData.entries.find((ed) => ed.number_of_pages);
+        const editionWithIsbn  = edData.entries.find((ed) => (ed.isbn_13?.length || ed.isbn_10?.length));
+        // Get the authors
+        const defaultAuthors = work.authors
+          ?.map((a) => a.name)
+          .join(", ") || "";
+
+        setActiveBook({
+          book_id: workId,
+          title: work.title,
+          author: defaultAuthors,
+          cover: work.covers?.length
+            ? `https://covers.openlibrary.org/b/id/${work.covers[0]}-L.jpg`
+            : "",
+          language: work.languages?.[0]?.key.split("/").pop() || "",
+          isbn: editionWithIsbn?.isbn_13?.[0]|| editionWithIsbn?.isbn_10?.[0] || "",
+          pages: editionWithPages?.number_of_pages || "",
+        });
+      } catch (err) {
+        console.error("Error fetching work:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWork();
+  }, [workId]);
+
+  useEffect(() => {
+    if (!activeBook) return;
+    setTitle(activeBook.title || "");
+    setAuthor(activeBook.author || "");
+    setLanguage(activeBook.language || "");
+    setIsbn(activeBook.isbn || "");
+    setPages(activeBook.pages || "");
+  }, [activeBook]);
+
+  // fetches the genres
   useEffect(() => {
     const fetchGenres = async () => {
       const { data, error } = await supabase.from("genres").select("*");
@@ -44,6 +92,10 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
     };
     fetchGenres();
   }, []);
+
+  if (loading || !activeBook) {
+    return <p>Loading book…</p>;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +108,6 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
     } = await supabase.auth.getUser();
     
     const userId = user?.id || user?.user?.id;
-
     if (userError || !user) {
       setError("You must be logged in to add a book.");
       setLoading(false);
@@ -64,10 +115,11 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
     }
 
     const { error: insertError } = await supabase
-      .from("user_books")
-      .insert([{
+    .from("user_books")
+    .insert([
+      {
         user_id: userId,
-        book_id: activeBook.id,
+        book_id: activeBook.book_id,  // <-- use book_id, not activeBook.id
         title,
         author,
         cover: activeBook.cover,
@@ -78,43 +130,41 @@ export default function AddBookForm({ book, onSubmit, onCancel }) {
         status,
         rating: rating || null,
         private: isPrivate,
-        notes: notes ? `[${new Date().toLocaleString()}]\n${notes}` : null,
+        notes: notes
+          ? `[${new Date().toLocaleString()}]\n${notes}`
+          : null,
         pages: pages || null,
-      }]);
+      },
+    ]);
 
-    if (!insertError) {
-      const { data: insertedBooks } = await supabase
-        .from("user_books")
-        .select("id")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-      const insertedBookId = insertedBooks?.[0]?.id;
-
-      if (insertedBookId && selectedGenres.length > 0) {
-        const genreInserts = selectedGenres.map((genre_id) => ({
-          book_id: insertedBookId,
-          genre_id,
-        }));
-        await supabase.from("book_genres").insert(genreInserts);
-      }
-
-      localStorage.removeItem("bookToAdd"); // ✅ cleanup
-      alert("Book added successfully!");
-      onSubmit?.();
-      navigate("/my-books");
-    }
-
+  if (insertError) {
+    setError("Failed to add book.");
     setLoading(false);
-  };
+    return;
+  }
+
+  // 6) Link genres, if any
+  if (selectedGenres.length > 0) {
+    const genreInserts = selectedGenres.map((genre_id) => ({
+      book_id: activeBook.book_id,
+      genre_id,
+    }));
+    await supabase.from("book_genres").insert(genreInserts);
+  }
+
+  alert("Book added successfully!");
+  onSubmit?.();
+  navigate("/my-books");
+  setLoading(false);
+};
 
   const handleCancel = () => {
-    localStorage.removeItem("bookToAdd"); // ✅ cleanup
     onCancel?.();
+    navigate(-1);
   };
 
   return (
+
     <Card className="max-w-md mx-auto p-4">
       {onCancel && (
         <Button variant="outline" onClick={handleCancel}>

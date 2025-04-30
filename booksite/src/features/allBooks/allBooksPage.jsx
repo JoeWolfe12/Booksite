@@ -52,16 +52,33 @@ export default function AllBooksPage() {
     fetchUser();
   }, []);
 
+  const handleAdd = (book) => {
+    const raw = book.book_id;
+    // if it starts with "/works/", drop that part
+    const workId = raw.startsWith("/works/")
+      ? raw.slice("/works/".length)
+      : raw;
+    navigate(`/add-book/${workId}`);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       // Fetch public books
       const { data: bookData, error: bookError } = await supabase
         .from("user_books")
-        .select(`
-          id, title, author, cover, status, rating, private,
-          user_id ( id, username ),
-          book_genres ( genres ( genre_name ) )
-        `)
+        .select(`id,
+                book_id,
+                title,
+                author,
+                cover,
+                language,
+                isbn,
+                pages,
+                status,
+                rating,
+                private,
+                user_id ( id, username ),
+                book_genres ( genre_id )`)
         .eq("private", false);
   
       if (bookError) console.error("Error loading books:", bookError);
@@ -75,8 +92,10 @@ export default function AllBooksPage() {
       const { data: userList } = await supabase.from("profiles").select("id, username");
       setUsers(userList || []);
     };
-  
+
     fetchData();
+  
+
   }, []);
 
   return (
@@ -190,10 +209,7 @@ export default function AllBooksPage() {
                 <Button
                 variant="link"
                 className="text-green-600 p-0 h-auto"
-                onClick={() => {
-                  localStorage.setItem("bookToAdd", JSON.stringify(book));
-                  navigate("/add-book");
-                }}
+                onClick={() => handleAdd(book)}
               >
                 Add
               </Button>
