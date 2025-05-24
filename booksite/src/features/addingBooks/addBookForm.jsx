@@ -51,9 +51,18 @@ export default function AddBookForm({ onSubmit, onCancel }) {
         const editionWithPages = edData.entries.find((ed) => ed.number_of_pages);
         const editionWithIsbn  = edData.entries.find((ed) => (ed.isbn_13?.length || ed.isbn_10?.length));
         // Get the authors
-        const defaultAuthors = work.authors
-          ?.map((a) => a.name)
-          .join(", ") || "";
+        const authorKeys = work.authors?.map((a) => a.author?.key).filter(Boolean) || [];
+        let defaultAuthors = "";
+        if (authorKeys.length > 0) {
+          const authorNames = await Promise.all(
+            authorKeys.map(async (key) => {
+              const res = await fetch(`https://openlibrary.org${key}.json`);
+              const authorData = await res.json();
+              return authorData.name;
+            })
+          );
+          defaultAuthors = authorNames.filter(Boolean).join(", ");
+        }
 
         setActiveBook({
           book_id: workId,
