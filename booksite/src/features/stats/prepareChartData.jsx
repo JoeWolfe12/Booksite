@@ -4,7 +4,7 @@ const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun",
                 "Jul","Aug","Sep","Oct","Nov","Dec"];
 
 export function prepareChartData(dataByMonth) {
-  // 1) Turn your raw data into a sorted array of month-entries
+  // 1) Turn raw data into a sorted array of month-entries
   const monthsData = Object.entries(dataByMonth)
     .map(([dateStr, entry]) => {
       const date = parse(dateStr, "yyyy-MM", new Date());

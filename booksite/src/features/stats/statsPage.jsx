@@ -84,6 +84,13 @@ export default function StatsPage() {
     ? chartData.reduce((sum, d) => sum + d.pages, 0) / chartData.length || 0
     : chartData.reduce((sum, d) => sum + d.rating, 0) / chartData.length || 0;
 
+  const totalBooks = filteredBooks.length;
+  const totalPages = filteredBooks.reduce((sum, book) => sum + (book.pages || 0), 0);
+  const booksWithRatings = filteredBooks.filter(book => book.rating);
+  const averageRating = booksWithRatings.length > 0 
+    ? booksWithRatings.reduce((sum, book) => sum + book.rating, 0) / booksWithRatings.length 
+    : 0;
+
   return (
     <div className="p-4 space-y-4">
       <h2 className="text-2xl font-bold">Reading Stats</h2>
@@ -139,6 +146,48 @@ export default function StatsPage() {
             onChange={(e) => setMonthRange({ ...monthRange, end: e.target.value })}
           />
         </div>
+      </div>
+
+      {/* Summary Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-blue-50 dark:bg-blue-900">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-300">
+                {totalBooks}
+              </div>
+              <div className="text-sm text-blue-800 dark:text-blue-200">
+                Total Books Read
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-green-50 dark:bg-green-900">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-300">
+                {totalPages.toLocaleString()}
+              </div>
+              <div className="text-sm text-green-800 dark:text-green-200">
+                Total Pages Read
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-purple-50 dark:bg-purple-900">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-300">
+                {averageRating > 0 ? averageRating.toFixed(1) : 'N/A'}
+              </div>
+              <div className="text-sm text-purple-800 dark:text-purple-200">
+                Average Rating
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Graph */}
