@@ -23,6 +23,7 @@ export default function Sidebar() {
       <Link to="/books" className="block">Search Books</Link>
       {user && <Link to="/stats" className="block">My Stats</Link>}
       {user && <Link to="/profile" className="block">My Profile</Link>}
+      {user && <Link to="/authors" className="block">Tracking Authors</Link>}
       <div className="pt-4">
         {user ? (
           <Button variant="outline" onClick={() => supabase.auth.signOut()}>

@@ -12,6 +12,7 @@ import MyBooksPage from "@/features/myBooks/myBooksPage";
 import EditBookPage from "@/features/addingBooks/editBookPage";
 import MyProfilePage from "@/features/myProfile/myProfilePage";
 import AllBooksPage from "@/features/allBooks/allBooksPage";
+import TrackingAuthorsPage from "@/features/trackingAuthors/trackingAuthors";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/edit-book/:id" element={<EditBookPage />} />
                     <Route path="/stats" element={<StatsPage />} />
                     <Route path="/profile" element={<MyProfilePage />} />
+                    <Route path="/authors" element={<TrackingAuthorsPage />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="*" element={<p>404 - Page Not Found</p>} />
                   </>
