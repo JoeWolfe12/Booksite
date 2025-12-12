@@ -18,7 +18,7 @@ const TrackingAuthorsPage = () => {
   const [upcomingBooks, setUpcomingBooks] = useState([
     { id: 1, title: 'The Winds of Winter', author: 'George R. R. Martin', releaseDate: '2026', status: 'Announced' },
     { id: 2, title: 'Stormlight 5', author: 'Brandon Sanderson', releaseDate: 'Dec 2024', status: 'Confirmed' },
-    { id: 3, title: 'The Fragile Threads of Power', author: 'V. E. Schwab', releaseDate: 'Released', status: 'Available' }
+    { id: 3, title: 'The Fragile Threads of Power', author: 'V. E. Schwab', releaseDate: 'Released', status: 'Available' },
   ]);
 
   const handleSearchAuthor = async () => {
@@ -208,86 +208,51 @@ const TrackingAuthorsPage = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <aside className="w-48 bg-sidebar border-r border-sidebar-border flex flex-col">
-        <nav className="flex-1 py-8">
-          <div className="space-y-1 px-3">
-            <a href="#" className="block px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md">
-              My Books
-            </a>
-            <a href="#" className="block px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md">
-              All Books
-            </a>
-            <a href="#" className="block px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md">
-              Search Books
-            </a>
-            <a href="#" className="block px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md">
-              My Stats
-            </a>
-            <a href="#" className="block px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md">
-              My Profile
-            </a>
-            <a href="#" className="block px-3 py-2 bg-sidebar-primary text-sidebar-primary-foreground rounded-md font-medium">
-              Tracking Authors
-            </a>
+    <div className="h-full">
+      {/* Top Navigation Tabs */}
+      <nav className="bg-card border-b border-border shadow-sm">
+        <div className="px-8">
+          <div className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('addAuthor')}
+              className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'addAuthor'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              Add Author
+            </button>
+            <button
+              onClick={() => setActiveTab('trackedAuthors')}
+              className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'trackedAuthors'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              Tracked Authors
+            </button>
+            <button
+              onClick={() => setActiveTab('upcomingBooks')}
+              className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'upcomingBooks'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              Upcoming Books
+            </button>
           </div>
-        </nav>
-        
-        <div className="p-4 border-t border-sidebar-border">
-          <button className="w-full px-4 py-2 text-sidebar-foreground hover:bg-sidebar-accent rounded-md text-left">
-            Log Out
-          </button>
         </div>
-      </aside>
+      </nav>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        {/* Top Navigation Tabs */}
-        <nav className="bg-card border-b border-border shadow-sm">
-          <div className="px-8">
-            <div className="flex space-x-8">
-              <button
-                onClick={() => setActiveTab('addAuthor')}
-                className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'addAuthor'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                Add Author
-              </button>
-              <button
-                onClick={() => setActiveTab('trackedAuthors')}
-                className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'trackedAuthors'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                Tracked Authors
-              </button>
-              <button
-                onClick={() => setActiveTab('upcomingBooks')}
-                className={`py-4 px-3 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'upcomingBooks'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-                }`}
-              >
-                Upcoming Books
-              </button>
-            </div>
-          </div>
-        </nav>
-
-        {/* Tab Content */}
-        <div className="px-8 py-8">
-          {activeTab === 'addAuthor' && renderAddAuthorTab()}
-          {activeTab === 'trackedAuthors' && renderTrackedAuthorsTab()}
-          {activeTab === 'upcomingBooks' && renderUpcomingBooksTab()}
-        </div>
-      </main>
+      {/* Tab Content */}
+      <div className="px-8 py-8">
+        {activeTab === 'addAuthor' && renderAddAuthorTab()}
+        {activeTab === 'trackedAuthors' && renderTrackedAuthorsTab()}
+        {activeTab === 'upcomingBooks' && renderUpcomingBooksTab()}
+      </div>
     </div>
   );
 };
