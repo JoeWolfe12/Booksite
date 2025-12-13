@@ -154,14 +154,17 @@ export default function TrackingAuthorsPage() {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE_URL}/authors/track/${authorId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
+      const response = await fetch(
+        `${API_BASE_URL}/authors/${authorId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
       if (!response.ok) {
         throw new Error(`Failed to remove author: ${response.status}`);
       }

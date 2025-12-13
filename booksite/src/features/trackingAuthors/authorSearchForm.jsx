@@ -50,7 +50,7 @@ export default function AuthorSearchForm({ onResults, isSearching, setIsSearchin
       <div className="flex gap-4">
         <input
           type="text"
-          placeholder="Enter author name (e.g., Brandon Sanderson)..."
+          placeholder="Enter author name ..."
           value={authorSearch}
           onChange={(e) => setAuthorSearch(e.target.value)}
           onKeyPress={handleKeyPress}
