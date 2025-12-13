@@ -1,8 +1,7 @@
 import { useState } from 'react';
 
-export default function AuthorSearchForm({ onResults }) {
+export default function AuthorSearchForm({ onResults, isSearching, setIsSearching }) {
   const [authorSearch, setAuthorSearch] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
 
   const handleSearch = async () => {
     if (!authorSearch.trim()) return;
@@ -18,7 +17,7 @@ export default function AuthorSearchForm({ onResults }) {
 
       // Format results for display
       const formattedResults = data.docs.map(author => ({
-        author_id: author.key, // e.g., "OL2658716A"
+        author_id: author.key.replace('/authors/', ''), // Extract just the ID (e.g., "OL2658716A")
         name: author.name,
         birth_date: author.birth_date || null,
         work_count: author.work_count || 0,
@@ -56,6 +55,7 @@ export default function AuthorSearchForm({ onResults }) {
           onChange={(e) => setAuthorSearch(e.target.value)}
           onKeyPress={handleKeyPress}
           className="flex-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          disabled={isSearching}
         />
         <button
           onClick={handleSearch}
