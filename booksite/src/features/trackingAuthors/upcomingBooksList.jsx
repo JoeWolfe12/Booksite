@@ -22,14 +22,6 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
     displayBooks.sort((a, b) => a.author_name.localeCompare(b.author_name));
   }
 
-  // Determine book status
-  const currentYear = new Date().getFullYear();
-  const getBookStatus = (year) => {
-    if (year > currentYear) return { label: 'Upcoming', color: 'bg-blue-500/20 text-blue-600' };
-    if (year === currentYear) return { label: 'New This Year', color: 'bg-green-500/20 text-green-600' };
-    return { label: 'Recent', color: 'bg-yellow-500/20 text-yellow-600' };
-  };
-
   return (
     <div className="bg-card rounded-lg p-8 shadow-sm">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -117,18 +109,13 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
                 <th className="text-left py-4 px-4 text-card-foreground font-semibold">
                   Year
                 </th>
-                <th className="text-left py-4 px-4 text-card-foreground font-semibold">
-                  Status
-                </th>
                 <th className="text-right py-4 px-4 text-card-foreground font-semibold">
-                  Link
+                  Add to List
                 </th>
               </tr>
             </thead>
             <tbody>
               {displayBooks.map((book) => {
-                const status = getBookStatus(book.first_publish_year);
-                
                 return (
                   <tr
                     key={book.book_id}
@@ -153,21 +140,14 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
                     <td className="py-4 px-4 text-card-foreground font-medium">
                       {book.first_publish_year}
                     </td>
-                    <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${status.color}`}>
-                        {status.label}
-                      </span>
-                    </td>
                     <td className="py-4 px-4 text-right">
                       <a
-                        href={`https://openlibrary.org${book.book_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={`https://www.booklog.io/add-book/${book.book_id}`}
                         className="text-sm text-primary hover:underline inline-flex items-center gap-1"
                       >
-                        View
+                        Add to List
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
                       </a>
                     </td>
@@ -180,8 +160,8 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
       )}
 
       <div className="mt-4 text-sm text-muted-foreground space-y-1">
-        <p>💡 Displaying books from the last 6 months and next 6 months from your tracked authors</p>
-        <p className="text-xs">The system automatically checks for new releases weekly. You'll receive email notifications for new books.</p>
+        <p>Showing newly released and upcoming books for your tracked authors</p>
+        <p className="text-xs">This list is updated weekly!</p>
       </div>
     </div>
   );
