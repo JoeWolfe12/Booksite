@@ -252,7 +252,7 @@ export default function TrackingAuthorsPage() {
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
-              Tracked Authors ({trackedAuthors.length})
+              Tracked Authors
             </button>
             <button
               onClick={() => setActiveTab('upcomingBooks')}
@@ -262,7 +262,7 @@ export default function TrackingAuthorsPage() {
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
-              Upcoming Books ({upcomingBooks.length})
+              Upcoming Books
             </button>
           </div>
         </div>
