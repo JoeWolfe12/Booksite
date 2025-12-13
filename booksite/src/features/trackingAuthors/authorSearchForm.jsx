@@ -54,7 +54,7 @@ export default function AuthorSearchForm({ onResults, isSearching, setIsSearchin
           value={authorSearch}
           onChange={(e) => setAuthorSearch(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="flex-1 px-4 py-3 border border-border rounded-lg bg-background text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 text-gray-100 placeholder-gray-400 text-lg focus:outline-none focus:ring-2 focus:ring-primary"
           disabled={isSearching}
         />
         <button
