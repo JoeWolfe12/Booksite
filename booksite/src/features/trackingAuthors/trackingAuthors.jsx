@@ -155,7 +155,7 @@ export default function TrackingAuthorsPage() {
       }
 
       const response = await fetch(
-        `${API_BASE_URL}/authors/${authorId}`,
+        `${API_BASE_URL}/authors/track/${authorId}`,
         {
           method: 'DELETE',
           headers: {
@@ -164,7 +164,7 @@ export default function TrackingAuthorsPage() {
           },
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to remove author: ${response.status}`);
       }
