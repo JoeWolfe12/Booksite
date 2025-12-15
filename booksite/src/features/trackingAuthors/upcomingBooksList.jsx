@@ -44,9 +44,11 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
               onFocus={(e) => e.target.style.borderColor = '#6366f1'}
               onBlur={(e) => e.target.style.borderColor = '#374151'}
             >
-              <option value="all">All Authors</option>
+              <option value="all" style={{ backgroundColor: 'transparent', color: '#ffffff' }}>All Authors</option>
               {authors.map(author => (
-                <option key={author} value={author}>{author}</option>
+                <option key={author} value={author} style={{ backgroundColor: 'transparent', color: '#ffffff' }}>
+                  {author}
+                </option>
               ))}
             </select>
           )}
