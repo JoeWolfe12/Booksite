@@ -1,32 +1,28 @@
 import { useState } from 'react';
 
 export default function UpcomingBooksList({ books, loading, onRefresh }) {
-  const [filterYear, setFilterYear] = useState('all');
-  const [sortBy, setSortBy] = useState('year'); // 'year' or 'author'
+  const [filterAuthor, setFilterAuthor] = useState('all');
 
-  // Get unique years for filtering
-  const years = books.length > 0 
-    ? [...new Set(books.map(b => b.first_publish_year))].sort((a, b) => b - a)
+  // Get unique authors for filtering
+  const authors = books.length > 0 
+    ? [...new Set(books.map(b => b.author_name))].sort((a, b) => a.localeCompare(b))
     : [];
 
-  // Filter and sort books
+  // Filter books by author
   let displayBooks = [...books];
   
-  if (filterYear !== 'all') {
-    displayBooks = displayBooks.filter(b => b.first_publish_year === parseInt(filterYear));
+  if (filterAuthor !== 'all') {
+    displayBooks = displayBooks.filter(b => b.author_name === filterAuthor);
   }
 
-  if (sortBy === 'year') {
-    displayBooks.sort((a, b) => b.first_publish_year - a.first_publish_year);
-  } else if (sortBy === 'author') {
-    displayBooks.sort((a, b) => a.author_name.localeCompare(b.author_name));
-  }
+  // Sort by year (most recent first)
+  displayBooks.sort((a, b) => b.first_publish_year - a.first_publish_year);
 
   return (
     <div className="bg-card rounded-lg p-8 shadow-sm">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-2xl font-semibold text-card-foreground">
-          Upcoming Releases
+          Tracked Autho's Recent And Upcoming Book Releases
         </h2>
         
         <div className="flex flex-wrap items-center gap-3">
@@ -34,32 +30,23 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
             {displayBooks.length} book{displayBooks.length !== 1 ? 's' : ''}
           </span>
           
-          {years.length > 0 && (
+          {authors.length > 0 && (
             <select
-              value={filterYear}
-              onChange={(e) => setFilterYear(e.target.value)}
-              className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              value={filterAuthor}
+              onChange={(e) => setFilterAuthor(e.target.value)}
+              className="px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="all">All Years</option>
-              {years.map(year => (
-                <option key={year} value={year}>{year}</option>
+              <option value="all">All Authors</option>
+              {authors.map(author => (
+                <option key={author} value={author}>{author}</option>
               ))}
             </select>
           )}
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 border border-border rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="year">Sort by Year</option>
-            <option value="author">Sort by Author</option>
-          </select>
-
           <button
             onClick={onRefresh}
             disabled={loading}
-            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50 transition flex items-center gap-2 border border-border rounded-lg hover:border-primary"
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50 transition flex items-center gap-2 border border-input rounded-lg hover:border-ring"
           >
             <svg 
               className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} 
@@ -82,16 +69,16 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
       ) : displayBooks.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground text-lg">
-            {filterYear !== 'all' 
-              ? `No books found for ${filterYear}` 
+            {filterAuthor !== 'all' 
+              ? `No books found for ${filterAuthor}` 
               : 'No upcoming books from tracked authors.'}
           </p>
-          {filterYear !== 'all' && (
+          {filterAuthor !== 'all' && (
             <button
-              onClick={() => setFilterYear('all')}
+              onClick={() => setFilterAuthor('all')}
               className="mt-4 px-4 py-2 text-sm text-primary hover:underline"
             >
-              View all years
+              View all authors
             </button>
           )}
         </div>
@@ -158,11 +145,6 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
           </table>
         </div>
       )}
-
-      <div className="mt-4 text-sm text-muted-foreground space-y-1">
-        <p>Showing newly released and upcoming books for your tracked authors</p>
-        <p className="text-xs">This list is updated weekly!</p>
-      </div>
     </div>
   );
 }
