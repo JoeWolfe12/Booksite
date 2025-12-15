@@ -32,7 +32,7 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
               value={filterAuthor}
               onChange={(e) => setFilterAuthor(e.target.value)}
               style={{
-                backgroundColor: 'transparent',
+                backgroundColor: '#1f2937',
                 color: '#ffffff',
                 border: '1px solid #374151',
                 borderRadius: '0.5rem',
