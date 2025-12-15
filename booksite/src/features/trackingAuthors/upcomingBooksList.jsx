@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 export default function UpcomingBooksList({ books, loading, onRefresh }) {
   const [filterAuthor, setFilterAuthor] = useState('all');
@@ -27,16 +28,19 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
           </span>
           
           {authors.length > 0 && (
-            <select
-              value={filterAuthor}
-              onChange={(e) => setFilterAuthor(e.target.value)}
-              className="px-3 py-2 border border-input rounded-lg bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Authors</option>
-              {authors.map(author => (
-                <option key={author} value={author}>{author}</option>
-              ))}
-            </select>
+            <Select value={filterAuthor} onValueChange={setFilterAuthor}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="All Authors" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600">
+                <SelectItem value="all">All Authors</SelectItem>
+                {authors.map(author => (
+                  <SelectItem key={author} value={author}>
+                    {author}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
 
           <button
