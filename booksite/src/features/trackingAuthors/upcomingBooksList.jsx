@@ -21,10 +21,6 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
   return (
     <div className="bg-card rounded-lg p-8 shadow-sm">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 className="text-2xl font-semibold text-card-foreground">
-          Tracked Autho's Recent And Upcoming Book Releases
-        </h2>
-        
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-muted-foreground">
             {displayBooks.length} book{displayBooks.length !== 1 ? 's' : ''}
@@ -34,7 +30,7 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
             <select
               value={filterAuthor}
               onChange={(e) => setFilterAuthor(e.target.value)}
-              className="px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="px-3 py-2 border border-input rounded-lg bg-input text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="all">All Authors</option>
               {authors.map(author => (
