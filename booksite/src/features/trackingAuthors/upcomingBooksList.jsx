@@ -28,19 +28,27 @@ export default function UpcomingBooksList({ books, loading, onRefresh }) {
           </span>
           
           {authors.length > 0 && (
-            <Select value={filterAuthor} onValueChange={setFilterAuthor}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="All Authors" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-300 dark:border-gray-600">
-                <SelectItem value="all">All Authors</SelectItem>
-                {authors.map(author => (
-                  <SelectItem key={author} value={author}>
-                    {author}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              value={filterAuthor}
+              onChange={(e) => setFilterAuthor(e.target.value)}
+              style={{
+                backgroundColor: 'transparent',
+                color: '#ffffff',
+                border: '1px solid #374151',
+                borderRadius: '0.5rem',
+                padding: '0.5rem 0.75rem',
+                fontSize: '0.875rem',
+                outline: 'none',
+                minWidth: '200px'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#6366f1'}
+              onBlur={(e) => e.target.style.borderColor = '#374151'}
+            >
+              <option value="all">All Authors</option>
+              {authors.map(author => (
+                <option key={author} value={author}>{author}</option>
+              ))}
+            </select>
           )}
 
           <button
