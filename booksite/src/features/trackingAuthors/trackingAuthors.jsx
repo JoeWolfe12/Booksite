@@ -262,7 +262,7 @@ export default function TrackingAuthorsPage() {
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
               }`}
             >
-              Upcoming Books
+              Recent Books
             </button>
           </div>
         </div>
